@@ -6,4 +6,4 @@ Amacımız, kullanıcıların kayıt olabildiği, giriş yapabildiği, profiller
 Aynı zamanda hesapların güvenliğini sağlamak için token tabanlı doğrulama yöntemlerini kullanacağız.  
 Ek olarak, bir kullanıcı şifresini unuttuğunda e-posta yoluyla şifre sıfırlama işleminin nasıl yapılacağını göstereceğiz.
 
-Projeyi takip ederek kendi API projenizi hızlıca ayağa kaldırabilir ve kullanıcı yönetimi mantığını öğrenebilirsiniz. Eğitim ve referans amaçlıdır; profesyonel projelere uyarlamak tamamen sizin yaratıcılığınıza kalmış.
+Projeyi takip ederek kendi API projenizi hızlıca ayağa kaldırabilir ve kullanıcı yönetimi mantığını öğrenebilirsiniz.
