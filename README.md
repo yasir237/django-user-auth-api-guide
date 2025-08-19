@@ -75,7 +75,18 @@ django-admin startproject backend .
 Burada `backend` bizim proje adımızdır. Siz isterseniz farklı bir isim verebilirsiniz.  
 Sondaki `.` ise projenin direkt olarak bulunduğumuz klasöre kurulmasını sağlar. Eğer `.` koymazsanız, Django otomatik olarak yeni bir klasör açar ve projeyi onun içine kurar.
 
-Kurulum bittikten sonra projemizi test etmek için şu komutla çalıştırabilirsiniz:
+Artık REST API geliştireceğimiz için projeye **Django REST Framework**’ü tanıtmamız gerekiyor. Bunun için `settings.py` dosyasını açıp `INSTALLED_APPS` listesine `rest_framework` ekliyoruz:
+
+```
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+]
+```
+
+Bu sayede Django, REST Framework’ü tanıyacak ve API geliştirmeye hazır hale geleceğiz 
+
+Projemizi test etmek için şu komutla çalıştırabilirsiniz:
 ```
 python manage.py runserver
 ```
@@ -100,4 +111,51 @@ setuptools          65.5.0
 sqlparse            0.5.3
 tzdata              2025.2
 ```
+
+
+---
+## 3️⃣ Migration Mantığı: makemigrations & migrate
+
+Django’da bir model oluşturduğumuzda ya da mevcut bir modele alan eklediğimizde bu değişikliklerin veritabanına yansıması gerekir. İşte bunun için **migration** işlemlerini kullanıyoruz.  
+
+Migration’ı kısaca şöyle düşünebilirsiniz:  
+
+“Django’ya yaptığımız model değişikliklerini kaydet ve veritabanına uygula.”  
+
+Bunun için iki adım vardır:  
+
+### 1. Değişiklikleri hazırlamak
+```
+python manage.py makemigrations
+```
+
+Bu komut, yaptığımız değişiklikler için migration dosyaları oluşturur (yani Django’ya “şu tabloya şu sütunu ekle” gibi talimatları hazırlar).  
+
+### 2. Veritabanına uygulamak
+```
+python manage.py migrate
+```
+
+Bu komut da hazırlanan migration dosyalarını çalıştırır ve değişiklikleri veritabanına uygular.  
+
+💡 Projeye ilk başladığınızda `migrate` komutunu mutlaka çalıştırmanız gerekir çünkü Django, `User` gibi kendi hazır tablolarını da bu aşamada veritabanına ekler.
+
+
+
+---
+## 4️⃣ User Modelini Anlamak  
+
+Django aslında bize hazır bir **User (kullanıcı) modeli** sunuyor. Yani ekstra olarak sütun tanımlamamıza gerek kalmadan, kullanıcı bilgilerini tutabileceğimiz bir yapı zaten var.  
+
+Bu modeli kullanmak için şu şekilde içe aktarabiliriz:  
+
+```python
+from django.contrib.auth.models import User
+```
+diyerek projeye dahil edebiliriz.
+
+Burada dikkat etmemiz gereken çok önemli bir nokta var:
+User modelindeki alanları olduğu gibi kullanmamız gerekir. Yani örneğin first_name alanı, modelde bu şekilde tanımlandığı için firstname ya da isim gibi farklı yazarsak hata alırız.
+
+Django’nun User modeli yalnızca alanlarla sınırlı değil; giriş-çıkış kontrolü, şifre doğrulama gibi birçok hazır metot da içeriyor. Biz bu projede temel alanları ve işlevleri kullanacağız, ama bilmenizde fayda var: Model oldukça kapsamlıdır ve gerektiğinde özelleştirilebilir
 
