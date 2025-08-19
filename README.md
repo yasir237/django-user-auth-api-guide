@@ -15,7 +15,7 @@ Ben **Windows** üzerinden anlatacağım, ama eğer siz farklı bir işletim sis
 
 Projeye başlamadan önce bir de **Postman**’ı kullanacağımızı bilmenizde fayda var. Yani API’ye istekler atıp, yaptığımız işlemlerin sonucunu hemen görebileceğiz. Böylece hem mantığı daha iyi anlayacağız hem de testlerimiz hızlı olacak.
 
-İndirmek için buraya tıklayabilirsiniz: <a href="https://www.postman.com/downloads/" target="_blank">Postman İndir</a>
+İndirmek için buraya tıklayabilirsiniz: [Postman İndir](https://www.postman.com/downloads/)
 
 ---
 
