@@ -30,7 +30,7 @@ Genelde projelerde çok fazla kütüphane olur ve her kütüphane başka projele
 mkdir project_root
 ```
 
-Ya da manuel olarak `project_root` adında, veya istediğiniz bir isimle bir klasör oluşturabilirsiniz.  
+Ya da manuel olarak `project_root` adında, veya projenizin adınla bir klasör oluşturabilirsiniz.  
 
 Oluşturduktan sonra terminali kullanarak bu klasörün içine girmemiz gerekiyor; çünkü gerekli komutlar bu klasörün içinde çalıştırılacak:
 
@@ -59,4 +59,27 @@ Aktifleştirdikten sonra artık bu klasörü **Visual Studio Code**’da açabil
 code .
 ```
 Bu komut bulunduğumuz klasörü direkt olarak VS Code’da açar. Eğer `code` komutu çalışmazsa, VS Code’u manuel olarak açıp klasörü kendiniz seçebilirsiniz.
+
+---
+## 2️⃣ İkinci Adım: Django İndirip Projeyi Oluşturma
+
+Sanal ortamımız aktifken artık ihtiyacımız olan kütüphaneleri kurmaya başlayabiliriz. İlk olarak `Django` ve `djangorestframework` paketlerini indireceğiz.
+```
+pip install django djangorestframework
+```
+Kurulum tamamlandıktan sonra yeni bir Django projesi oluşturalım. Bunun için şu komutu yazıyoruz:
+```
+django-admin startproject backend .
+```
+
+Burada `backend` bizim proje adımızdır. Siz isterseniz farklı bir isim verebilirsiniz.  
+Sondaki `.` ise projenin direkt olarak bulunduğumuz klasöre kurulmasını sağlar. Eğer `.` koymazsanız, Django otomatik olarak yeni bir klasör açar ve projeyi onun içine kurar.
+
+Kurulum bittikten sonra projemizi test etmek için şu komutla çalıştırabilirsiniz:
+```
+python manage.py runserver
+```
+Eğer tarayıcıda `http://127.0.0.1:8000/` adresine gidince Django’nun hoş geldiniz ekranını görüyorsanız her şey yolunda demektir 🚀
+
+
 
