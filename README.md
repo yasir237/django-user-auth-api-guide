@@ -23,7 +23,16 @@ Projeye başlamadan önce bir de **Postman**’ı kullanacağımızı bilmenizde
 
 Genelde projelerde çok fazla kütüphane olur ve her kütüphane başka projelere etki edebilir. Bu yüzden biz **sanal ortam** oluşturuyoruz; yani her projeyi izole bir ortamda tutuyoruz. Böylece kütüphaneler karışmaz ve her şey düzenli kalır.
 
-Sanal Ortamı Oluşturan Komut
+Önce projemizi nerede yapmamızı istediğimiz yere gidiyoruz ve terminalde bu şekide bir komut kullanarak yeni bir klasör oluşturalım, bu klasörde ilerde frontend ile bağlamanız istiyorsanız bu ana klasörde oluşturabilirsiniz ve kolayca oluşturabilirsiniz. yeni bir klasör oluşturmamızı sağlayan komut:
+```
+mkdir project_root
+```
+ya da siz manual olarak `project_root` adılı veya sizin seçmek istediğiniz bir isimle bir klaösr oluşturabilirsiniz. Oluşturduktan sonra bu terminali kullanarak bu klasörün içine girmemiz gerek çünkü gerekli komutlar bu klasörün içinde çalıştırmamız gerek. klasörün içinde girmek için bu komutu kullanacağız:
+```
+cd project_root
+```
+
+Şimdi sanal ortamı oluşturalım, oluşturmak için kullanacağımız komut:
 ``` 
 python -m venv venv
 ```
