@@ -81,5 +81,23 @@ python manage.py runserver
 ```
 Eğer tarayıcıda `http://127.0.0.1:8000/` adresine gidince Django’nun hoş geldiniz ekranını görüyorsanız her şey yolunda demektir 🚀
 
+Projeyi test ettikten sonra `Ctrl + C` tuşlarına basarak sunucuyu durdurabilirsiniz.  
 
+Şimdi gerçekten kütüphanelerimiz doğru bir şekilde inmiş mi diye bakalım. Bunun için terminalde şu komutu çalıştırıyoruz:
+
+```
+pip list
+```
+İnmesi gereken kütüphaneler:
+```
+Package             Version
+------------------- -------
+asgiref             3.9.1
+Django              5.2.5
+djangorestframework 3.16.1
+pip                 24.0
+setuptools          65.5.0
+sqlparse            0.5.3
+tzdata              2025.2
+```
 
