@@ -143,19 +143,137 @@ Bu komut da hazırlanan migration dosyalarını çalıştırır ve değişiklikl
 
 
 ---
-## 4️⃣ User Modelini Anlamak  
+## 4️⃣ Simple JWT Kurulumu  
 
-Django aslında bize hazır bir **User (kullanıcı) modeli** sunuyor. Yani ekstra olarak sütun tanımlamamıza gerek kalmadan, kullanıcı bilgilerini tutabileceğimiz bir yapı zaten var.  
+Şimdi kullanıcıların giriş yapabilmesi ve her istekte kim olduklarını kanıtlayabilmesi için bir yöntem eklememiz gerekiyor. Django REST Framework (DRF) ile en çok kullanılan yöntemlerden biri **JWT (JSON Web Token)**. 
 
-Bu modeli kullanmak için şu şekilde içe aktarabiliriz:  
+Biz bu projede JWT’yi kullanmak için **Simple JWT** kütüphanesini ekleyeceğiz.  
 
+Biz de bu projede JWT için Simple JWT kütüphanesini kullanacağız.
+Merak edenler için resmi [dokümantasyonu](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/getting_started.html#installation) da bırakıyorum.
+ 
+Kurmak için terminale şu komutu yazalım:
+```bash
+pip install djangorestframework-simplejwt
+```
+
+### Ayarlar
+Kurulumdan sonra `settings.py` dosyamızda birkaç ayar yapmamız gerekiyor.
+
+👉 Önce `REST_FRAMEWORK` kısmına JWT’yi ekliyoruz:
 ```python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+```
+👉 Daha sonra `INSTALLED_APPS` içine şunu ekliyoruz:
+```python
+INSTALLED_APPS = [
+    .
+    .
+    .
+    'rest_framework_simplejwt',
+]
+```
+
+👉 Token sürelerini ayarlamak için en üstte `timedelta` import ediyoruz:
+```python
+from datetime import timedelta
+```
+Ardından aşağıdaki ayarları ekleyelim:
+```python
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'BLACKLIST_AFTER_ROTATION':True,
+    'AUTH_HEADER_TYPES':('Bearer',),
+    'AUTH_TOKEN_CLASSES':('rest_framework_simplejwt.tokens.AccessToken',),
+}
+```
+* **Access Token** → Kullanıcının giriş anahtarı. Her istekte kim olduğunu kanıtlar ama kısa süre sonra geçersiz olur.
+* **Refresh Token** → Access token bittiğinde yeni bir tane almak için kullanılır. Daha uzun ömürlüdür.
+* **ACCESS\_TOKEN\_LIFETIME** → Access token’ın geçerlilik süresi.
+* **REFRESH\_TOKEN\_LIFETIME** → Refresh token’ın geçerlilik süresi.
+* **BLACKLIST\_AFTER\_ROTATION** → Refresh token kullanıldığında eskisini geçersiz yapar.
+* **AUTH\_HEADER\_TYPES** → Token’ın başına ne yazacağımız. Genelde `Bearer`.
+* **AUTH\_TOKEN\_CLASSES** → Kullanılacak token tipi. Biz `AccessToken` kullanıyoruz.
+
+---
+
+## 5️⃣ Account Uygulaması Oluşturma
+Artık kullanıcılarla ilgili işlemleri ayrı bir uygulama içinde yapacağız. Bunun için `account` adında bir app oluşturuyoruz, isterseniz siz `hesap` veya başka bir isim verebilirsiniz
+
+```bash
+python manage.py startapp account
+```
+Oluşturulduktan sonra `settings.py` dosyasında **INSTALLED_APPS** kısmına ekliyoruz:
+```bash
+INSTALLED_APPS = [
+    .
+    .
+    .
+    'account.apps.AccountConfig',
+]
+```
+
+---
+## 6️⃣ Serializers Oluşturma
+
+Django REST Framework’te **serializer**’lar, modellerimizi JSON’a çevirmemizi ve gelen JSON verilerini modele dönüştürmemizi sağlar. Yani kısaca API’nin veri formatını yönetiyorlar.
+
+`account` uygulamamızı oluşturduğumuzda fark edeceğiz ki, `account` adında yeni bir klasör oluştu. Bu klasörün içinde `serializers.py` dosyasını manuel olarak oluşturabilir veya terminalden şu komutları kullanabilirsiniz:
+```bash
+# Windows
+New-Item -Path "account\serializers.py" -ItemType "File"
+
+# Mac/Linux:
+touch account/serializers.py
+```
+
+İlk olarak kullanacağımız kütüphaneleri tanımlıyoruz:
+```bash
+from rest_framework import serializers
 from django.contrib.auth.models import User
 ```
-diyerek projeye dahil edebiliriz.
 
-Burada dikkat etmemiz gereken çok önemli bir nokta var:
-User modelindeki alanları olduğu gibi kullanmamız gerekir. Yani örneğin first_name alanı, modelde bu şekilde tanımlandığı için firstname ya da isim gibi farklı yazarsak hata alırız.
+* `rest_framework.serializers` sayesinde serializer özelliklerini kullanabileceğiz.
+* `User` modeli, Django’nun bize sunduğu hazır kullanıcı modelidir; ekstra sütun tanımlamamıza gerek yok.
 
-Django’nun User modeli yalnızca alanlarla sınırlı değil; giriş-çıkış kontrolü, şifre doğrulama gibi birçok hazır metot da içeriyor. Biz bu projede temel alanları ve işlevleri kullanacağız, ama bilmenizde fayda var: Model oldukça kapsamlıdır ve gerektiğinde özelleştirilebilir
+⚠️ Önemli: User modelindeki alanları **tam olarak** yazmalıyız. Örneğin `first_name` alanını `firstname` veya `isim` gibi yazarsak hata alırız.
+
+Django’nun User modeli sadece alanlardan ibaret değil; giriş-çıkış, şifre doğrulama gibi birçok hazır metot da içeriyor. Biz bu projede temel alanları ve işlevleri kullanacağız, ama modelin oldukça kapsamlı olduğunu bilmekte fayda var.
+
+Yeni kayıt olmak için gerekli bilgileri belirten bir sınıf oluşturuyoruz:
+
+```python
+class SignUpSerializer(serializers.ModelSerializer):
+    class meta:
+        model = User
+        fields = ("first_name", "last_name", "email", "password")
+
+        extra_kwargs = {
+            "first_name": {"required": True, "allow_blank": False},
+            "last_name": {"required": True, "allow_blank": False},
+            "email": {"required": True, "allow_blank": False},
+            "password": {"required": True, "allow_blank": False, "min_length": 8},
+        }
+```
+Bu serializer sayesinde kullanıcıdan hangi bilgileri alacağımızı ve her alanın zorunluluklarını belirlemiş oluyoruz.
+
+Aynı `serializers.py` dosyasında, yukarıda tanımladığımız `SignUpSerializer`’ın altında başka bir sınıf oluşturuyoruz: **`UserSerializer`**.
+
+Bu sınıf, kullanıcı kayıt olduktan sonra onun bilgilerini göstermek için kullanılacak. Örnek olarak şöyle tanımlayabiliriz:
+
+```python
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+```
+
+Böylece kullanıcı bilgilerimizi API üzerinden döndürebiliriz.
+
+
 
