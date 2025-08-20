@@ -277,3 +277,32 @@ Böylece kullanıcı bilgilerimizi API üzerinden döndürebiliriz.
 
 
 
+---
+
+
+## 7️⃣ Views Dosyasını Hazırlama
+
+`views.py` dosyasında kullanıcı kayıt ve giriş işlemlerini kontrol edeceğiz. Bunun için bazı kütüphanelere ihtiyacımız var:
+
+```python
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from rest_framework import status
+from .serializers import SignUpSerializer
+```
+
+Açıklama:
+
+* `api_view` → Bir fonksiyonun API endpoint’i olarak çalışmasını sağlar.
+* `Response` → API’den JSON cevap döndürmek için kullanılır.
+* `User` → Django’nun hazır kullanıcı modeli.
+* `make_password` → Kullanıcı şifresini güvenli bir şekilde hash’lemek için.
+* `status` → HTTP durum kodlarını kullanmamıza yarar (örn. 200, 400, 404).
+* `SignUpSerializer` → Kullanıcı kayıt verilerini doğrulamak ve JSON formatına çevirmek için.
+
+
+
+
+
