@@ -401,3 +401,39 @@ urlpatterns = [
 
 Artık `http://127.0.0.1:8000/api/account/register/` adresine `POST` isteği atarak yeni kullanıcı kaydı yapılabilir 🎉
 
+---
+
+## 9️⃣ Superuser (Yönetici Hesabı) Oluşturma
+
+Django’nun bize sunduğu en güzel özelliklerden biri de **admin paneli**. Burada kullanıcıları, verileri ve modelleri yönetebiliriz. Ama bunun için önce bir yönetici hesabı (superuser) oluşturmamız gerekiyor.
+
+Bunun için terminalde şu komutu çalıştırıyoruz:
+
+```bash
+python manage.py createsuperuser
+```
+
+Komutu verdikten sonra bizden birkaç bilgi isteyecek:
+
+* **Username (kullanıcı adı)**
+* **Email address (e-posta)**
+* **Password (şifre)**
+
+Şifreyi yazarken terminalde görünmeyecek ama endişelenme, normal bir davranış ✅
+
+Hesabı oluşturduktan sonra artık `http://127.0.0.1:8000/admin/` adresine gidip giriş yapabilirsin.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
