@@ -336,3 +336,68 @@ def register(request):
 ```
 
 Böylece hem kod daha sade hem de okunması daha kolay hale geliyor.
+
+---
+## 8️⃣ URL’leri Düzenleme
+Şimdiye kadar `views.py` içinde endpointimizi yazdık ama bu endpoint’in bir adresi (yolu) yok. Kullanıcıların `http://localhost:8000/register/` gibi bir adrese giderek backend’e ulaşabilmesi için `urls.py` dosyasını hazırlamamız gerekiyor.
+
+📌 Burada önemli nokta şu:
+Django’da genelde iki katmanlı bir URL yapısı kullanıyoruz:
+
+1. **Proje düzeyi urls.py** → (backend klasörünün içindeki `urls.py`)
+2. **App düzeyi urls.py** → (bizim `account` uygulamamızın içinde yeni açacağımız `urls.py`)
+
+Bu şekilde her uygulamanın kendi `urls.py` dosyası oluyor, projeyi daha düzenli hale getiriyor.
+
+
+
+### Adım 1: `account` uygulamasında urls.py oluştur
+
+Manuel olarak dosya açabilirsin ya da terminalden şu şekilde:
+
+```bash
+# Windows
+New-Item -Path "account\urls.py" -ItemType "File"
+
+# Mac/Linux
+touch account/urls.py
+```
+
+
+
+### Adım 2: İçine URL tanımla
+
+`account/urls.py` dosyası içine şunu yazıyoruz:
+
+```python
+from django.urls import path
+from .views import register
+
+urlpatterns = [
+    path("register/", register, name="register"),
+]
+```
+
+Burada şunu yaptık:
+
+* `register/` adresine istek gelirse bizim `views.py` içindeki `register` fonksiyonunu çalıştır.
+* `name="register"` diyerek bu endpoint’e isim verdik (ileride redirect ya da reverse kullanırken işimize yarar).
+
+ 
+
+### Adım 3: Proje urls.py’ye dahil et
+
+Son olarak proje düzeyindeki `backend/urls.py` dosyasına gidip `account` app’imizin URL’lerini dahil etmeliyiz:
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/account/", include("account.urls")),  # 👈 account app’in urls.py’sini dahil ettik
+]
+```
+
+Artık `http://127.0.0.1:8000/api/account/register/` adresine `POST` isteği atarak yeni kullanıcı kaydı yapılabilir 🎉
+
