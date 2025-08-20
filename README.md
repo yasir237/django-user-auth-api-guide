@@ -303,6 +303,37 @@ Açıklama:
 * `SignUpSerializer` → Kullanıcı kayıt verilerini doğrulamak ve JSON formatına çevirmek için.
 
 
+### Register View
 
+Bu fonksiyon, yeni kullanıcı kaydı için kullanılan endpoint. Yani kullanıcı kayıt olmak istediğinde burası devreye giriyor
 
+```python
+@api_view(["POST"])
+def register(request):
+    data = request.data
+    user = SignUpSerializer(data=data)
 
+    if user.is_valid():
+        if not User.objects.filter(username=data["email"]).exists():
+            user = User.objects.create(
+                username=data['email'],
+                first_name=data["first_name"],
+                last_name=data["last_name"],
+                email=data["email"],
+                password=make_password(data["password"]),
+            )
+
+            return Response({'details': 'Your account registered successfully!'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'details': 'This email already exists!'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(user.errors)
+```
+Kısaca ne yapıyor:
+
+* Fonksiyon sadece **POST** isteklerini kabul ediyor.
+* Kullanıcıdan gelen verileri **SignUpSerializer** ile kontrol ediyoruz.
+* Eğer aynı email daha önce kullanılmamışsa yeni kullanıcı oluşturuyoruz, şifreyi **make\_password** ile güvenli hâle getiriyoruz.
+* İşlem başarılı olursa 201 kodu ile başarı mesajı döner, eğer email daha önce varsa veya veri hatalıysa uygun hata mesajı döner.
+
+Yani özetle, kullanıcı kaydı için bütün kontroller ve işlemler burada yapılmış oluyor.
