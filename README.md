@@ -528,3 +528,83 @@ Bu endpoint, kullanıcının **username ve password** bilgilerini alacak ve baş
 > Bu adım sayesinde artık kullanıcı giriş yaptıktan sonra her isteğini güvenli bir şekilde doğrulayabiliriz.
 
 
+---
+## 1️⃣2️⃣ Kullanıcı Bilgilerini Görüntüleme (IsAuthenticated)
+
+Şimdi kullanıcı kendi bilgilerini Görüntülemek için tokenleri kullanmamız gerek, her seferinde giriş yapmak yerine onun aldığı tokeni kullanacağız. Bunu yapmak için `IsAuthenticated` ekleyeceğiz.
+
+
+### Adım 1: Views.py Dosyasında Yeni Metot
+
+Önce gerekli kütüphaneleri ekleyelim:
+
+```python
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+```
+
+Ardından yeni bir fonksiyon tanımlıyoruz:
+
+```python
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+    user = UserSerializer(request.user, many=False)
+    return Response(user.data)
+```
+
+* `@permission_classes([IsAuthenticated])` → Bu endpoint’e **sadece giriş yapmış kullanıcılar** erişebilir.
+* `request.user` → Giriş yapan kullanıcıyı temsil eder.
+* `UserSerializer` → Daha önce serialiser dosyasına yazdığımız sınıf, kullanıcı verilerini JSON formatına çevirir.
+
+### Adım 2: URL Tanımlaması
+
+`account/urls.py` dosyasında yolunu ekliyoruz:
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("register/", views.register, name="register"),
+    path('userinfo/', views.current_user, name='user_info'), # 👈 yeni endpoint
+]
+```
+
+Artık `http://127.0.0.1:8000/api/account/userinfo/` adresi ile kullanıcı verilerini çekebileceğiz.
+
+
+### Adım 3: Postman ile Deneme
+Şimdi postman kullanarak test edelim:
+
+<img width="1144" height="775" alt="1 (5)" src="https://github.com/user-attachments/assets/e40b6100-37e6-4cac-8cc3-a025706d8603" />
+
+1. Postman’de yeni bir `GET` isteği oluştur.
+2. URL olarak:
+
+   ```
+   http://127.0.0.1:8000/api/account/userinfo/
+   ```
+3. **Authorization** kısmına geç
+4. Açılan pencereden **Bearer Token** seç → daha önce aldığımız **access token**’ı ekle.
+5. **Send** butonuna bas.
+6. Başarılı olursa durum olarak `200 OK` göstermesi gerek.
+7. Başarılı olursa kendi kullanıcı bilgilerini JSON formatında göreceksin:
+
+```json
+{
+    "username": "yasiralrawi@example.com",
+    "email": "yasiralrawi@example.com",
+    "first_name": "Yasir",
+    "last_name": "Alrawi"
+}
+```
+
+> Bu adım sayesinde endpointlerimizi güvenli hale getirdik ve kullanıcılar sadece kendi verilerini görebiliyor.
+
+
+
+
+
+
+
