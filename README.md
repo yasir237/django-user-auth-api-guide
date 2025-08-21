@@ -673,7 +673,7 @@ Güncelleme işlemi deneyelim:
    ```
    http://127.0.0.1:8000/api/account/update/
    ```
-3. **Authorization** kısmında **Bearer Token** kullan ve token’ı ekle.
+3. **Authorization** kısmında biraz önceki eklediğimiz **Bearer Token** ekli olduğundan emin ol.
 4. Body → raw → JSON ile güncellemek istediğin bilgileri gönder:
 
 ```json
