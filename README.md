@@ -492,7 +492,7 @@ Bu endpoint, kullanıcının **username ve password** bilgilerini alacak ve baş
 ### Adım 2: Postman ile Token Alma
 
 
-<img width="1144" height="775" alt="1 (3)" src="https://github.com/user-attachments/assets/901fea35-5aee-4288-ac80-845d92f8eef5" />
+<img width="1144" height="775" alt="Postmen Çıktısı" src="https://github.com/user-attachments/assets/901fea35-5aee-4288-ac80-845d92f8eef5" />
 
 
 1. Postman’i aç ve yeni bir `POST` isteği oluştur.
@@ -577,7 +577,7 @@ Artık `http://127.0.0.1:8000/api/account/userinfo/` adresi ile kullanıcı veri
 ### Adım 3: Postman ile Deneme
 Şimdi postman kullanarak test edelim:
 
-<img width="1144" height="775" alt="1 (5)" src="https://github.com/user-attachments/assets/e40b6100-37e6-4cac-8cc3-a025706d8603" />
+<img width="1144" height="775" alt="Postmen Çıktısı" src="https://github.com/user-attachments/assets/50630a5b-dc30-4044-915c-39017d0b2e50" />
 
 1. Postman’de yeni bir `GET` isteği oluştur.
 2. URL olarak:
@@ -585,7 +585,7 @@ Artık `http://127.0.0.1:8000/api/account/userinfo/` adresi ile kullanıcı veri
    ```
    http://127.0.0.1:8000/api/account/userinfo/
    ```
-3. **Authorization** kısmına geç
+3. **Authorization** kısmına geç.
 4. Açılan pencereden **Bearer Token** seç → daha önce aldığımız **access token**’ı ekle.
 5. **Send** butonuna bas.
 6. Başarılı olursa durum olarak `200 OK` göstermesi gerek.
