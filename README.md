@@ -603,6 +603,97 @@ Artık `http://127.0.0.1:8000/api/account/userinfo/` adresi ile kullanıcı veri
 > Bu adım sayesinde endpointlerimizi güvenli hale getirdik ve kullanıcılar sadece kendi verilerini görebiliyor.
 
 
+---
+
+
+## 1️⃣3️⃣ Kullanıcı Bilgilerini Güncelleme
+Artık kullanıcı giriş yaptı ve kendi bilgilerini görebiliyor. Şimdi kendi kullanıcı bilgilerini güncelleyebilmesini sağlayacağız.
+
+
+### Adım 1: Views.py Dosyasında Yeni Fonksiyon
+
+Önce gerekli kütüphaneler zaten ekliydi; tekrar eklemeye gerek yok. Yeni bir fonksiyon ekliyoruz:
+
+```python
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    user = request.user
+    data = request.data
+
+    # Mevcut kullanıcı bilgilerini güncelle
+    user.first_name = data.get('first_name', user.first_name)
+    user.last_name = data.get('last_name', user.last_name)
+    user.email = data.get('email', user.email)
+    user.username = data.get('email', user.username)  # username email olarak tutuluyor
+
+    # Şifre güncelleme opsiyonel
+    if data.get('password'):
+        user.set_password(data['password'])
+
+    user.save()
+
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+```
+
+* `@permission_classes([IsAuthenticated])` → Bu endpoint’e sadece giriş yapmış kullanıcılar erişebilir.
+* `request.user` → Güncellenmek istenen kullanıcıyı temsil eder.
+* `user.save()` → Değişiklikleri veritabanına kaydeder.
+* Şifre değişimi yapılırsa `set_password()` kullanıyoruz ki şifre hashlenmiş şekilde saklansın.
+
+---
+
+### Adım 2: URL Tanımlaması
+
+`account/urls.py` dosyasına ekliyoruz:
+
+```python
+urlpatterns = [
+    path('register/', views.register, name='register'),
+    path('userinfo/', views.current_user, name='user_info'),
+    path('update/', views.update_user, name='update_user'),  # 👈 yeni endpoint
+]
+```
+
+Artık `http://127.0.0.1:8000/api/account/update/` adresi ile kullanıcı bilgilerini güncelleyebiliriz.
+
+---
+
+### Adım 3: Postman ile Deneme
+Güncelleme işlemi deneyelim:
+
+<img width="1144" height="775" alt="1 (8)" src="https://github.com/user-attachments/assets/7127c4b0-8045-48b3-af56-5d5f69093bba" />
+
+
+
+1. Postman’de yeni bir **PUT** isteği oluştur.
+2. URL:
+
+   ```
+   http://127.0.0.1:8000/api/account/update/
+   ```
+3. **Authorization** kısmında **Bearer Token** kullan ve token’ı ekle.
+4. Body → raw → JSON ile güncellemek istediğin bilgileri gönder:
+
+```json
+{
+    "username": "yasiralrawiguncellenmistir@example.com",
+    "email": "yasiralrawiguncellenmistir@example.com",
+    "first_name": "Yasir-guncellenmistir",
+    "last_name": "Alrawi-guncellenmistir"
+}
+```
+
+5. **Send** butonuna bas.
+6.  Başarılı olursa `200 OK` durumunu göreceksin.
+7.  Başarılı olursa güncellenmiş kullanıcı verilerini JSON olarak alırsın.
+
+
+
+
+
+
 
 
 
