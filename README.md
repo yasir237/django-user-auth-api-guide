@@ -435,10 +435,10 @@ Artık zaten endpoint hazır, sıra test etmekte. Deponun başında dediğimiz g
 Önce bizim metod `POST` olacak ve URL → `http://127.0.0.1:8000/api/account/register/` olacaktır. yeni kaydın bilgileri göndermemiz gerekiyor o yüzden Body → raw → JSON seçerek aşağıdaki bilgileri örnek olarak ekleyelim
 ```json
 {
-  "first_name": "Ahmet",
-  "last_name": "Yılmaz",
-  "email": "ahmet@example.com",
-  "password": "sifre1234"
+    "first_name": "Yasir",
+    "last_name": "Alrawi",
+    "email": "yasiralrawi@example.com",
+    "password": "Django123"
 }
 ```
 
@@ -466,9 +466,65 @@ NOT: **Authorization:** Hiçbir şey eklemeyin. Daha önce eklediyseniz silin.
 4. Yeni kullanıcı bilgilerimizi JSON formatında yazıyoruz.
 5. **Send butonuna** tıklıyoruz.
 6. Başarılı olduğunda `201 Created` durum kodunu görmemiz gerekiyor (bu, yeni kayıt oluşturuldu demektir ✅).
-7. `views` kısmında biz başarı mesajı olarak ayarladığımız için bize "Your account resgistered successfully!" döndürmesi gerek.
+7. `views` dosyasında biz başarı mesajı olarak ayarladığımız için bize "Your account resgistered successfully!" döndürmesi gerek.
 ---
 
 
+## 1️⃣1️⃣ JWT Token Almak
+
+Şimdi kullanıcıların giriş yaptıktan sonra her istekte kim olduklarını kanıtlaması için token kullanacağız. Django REST Framework ve Simple JWT sayesinde bunu çok kolay yapabiliyoruz.
+
+
+### Adım 1: Token Endpoint’i Eklemek
+
+Proje düzeyindeki `urls.py` dosyasına aşağıdaki kütüphaneyi ve satırı ekliyoruz:
+```python
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+urlpatterns = [
+    # diğer pathler...
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+]
+```
+
+Bu endpoint, kullanıcının **username ve password** bilgilerini alacak ve başarılıysa ona **access token** ve **refresh token** verecek.
+
+### Adım 2: Postman ile Token Alma
+
+
+<img width="1144" height="775" alt="1 (3)" src="https://github.com/user-attachments/assets/901fea35-5aee-4288-ac80-845d92f8eef5" />
+
+
+1. Postman’i aç ve yeni bir `POST` isteği oluştur.
+2. URL olarak:
+
+   ```
+   http://127.0.0.1:8000/api/token/
+   ```
+3. Body → raw → JSON seç.
+4. Aşağıdaki örnek veriyi ekle:
+
+```json
+{
+    "username": "yasiralrawi@example.com",
+    "password": "Django123"
+}
+```
+
+5. **Send** butonuna bas.
+6. Başarılı olursa durum olarak `200 OK` göstermesi gerek.
+7. Başarılı olursa sonuç olarak iki token dönecek:
+
+```json
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1NTg3NjAyMywiaWF0IjoxNzU1Nzg5NjIzLCJqdGkiOiI1NzQ0YzE2NThlYTc0YzM1YjM2Y2MxOWU3YjU2YzAxYSIsInVzZXJfaWQiOiIzIn0.MDsAkoq4htOu3WjOMh3sRx2_T-V8Xob0dkkLFOV1-8Q",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3MDg1NjIzLCJpYXQiOjE3NTU3ODk2MjMsImp0aSI6IjY1MzFiODliYTU3ODQ1YjY4MTk1ZWZkMWI5OGQxMDIyIiwidXNlcl9pZCI6IjMifQ.6Rv5kqLRVvBue15J7w-0xtyMAq3_bhPh7Eiv4ThHE1s"
+}
+```
+
+* **Access Token:** API isteğinde kullanıcıyı tanımak için kullanılır.
+* **Refresh Token:** Access token süresi dolduğunda yenisini almak için kullanılır.
+
+> Bu adım sayesinde artık kullanıcı giriş yaptıktan sonra her isteğini güvenli bir şekilde doğrulayabiliriz.
 
 
