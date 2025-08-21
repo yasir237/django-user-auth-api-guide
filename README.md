@@ -424,15 +424,50 @@ Komutu verdikten sonra bizden birkaç bilgi isteyecek:
 Hesabı oluşturduktan sonra artık `http://127.0.0.1:8000/admin/` adresine gidip giriş yapabilirsin.
 
 ---
+## 🔟 Postman ile `register` Endpoint’ine İstek Gönderme
+Önce bizim sunucu çalıştırmamız gerekiyor bu yüzden aşağıdaki komutu kullanarak django sunucusunu çalıştıralım:
+```bash
+python manage.py runserver
+```
+Eğer runserver komutunu çalıştırmazsanız Postman isteği hata dönecektir.
 
+Artık zaten endpoint hazır, sıra test etmekte. Deponun başında dediğimiz gibi **Postman** kullanacağız.
+Önce bizim metod `POST` olacak ve URL → `http://127.0.0.1:8000/api/account/register/` olacaktır. yeni kaydın bilgileri göndermemiz gerekiyor o yüzden Body → raw → JSON seçerek aşağıdaki bilgileri örnek olarak ekleyelim
+```json
+{
+  "first_name": "Ahmet",
+  "last_name": "Yılmaz",
+  "email": "ahmet@example.com",
+  "password": "sifre1234"
+}
+```
 
+NOT: **Authorization:** Hiçbir şey eklemeyin. Daha önce eklediyseniz silin.
 
+İsteği göndermek için **Send** butonuna tıklayarak göndeririz. Ve sonuç olarak bunu görmemiz gerek:
+```json
+{
+    "details": "Your account registered successfully!"
+}
+```
+* Aynı e-mail varsa:
+```json
+{
+    "details": "This email already exists!"
+}
+```
+> Bu adım sayesinde yeni kullanıcı kayıtlarını hızlıca test edebilirsiniz.
 
+<img width="1144" height="775" alt="Postmen Çıktısı" src="https://github.com/user-attachments/assets/5f60cdd6-a7b7-482b-83ff-ff1a3243e12c" />
 
-
-
-
-
+1. Method olarak **POST** seçiyoruz.
+2. URL kısmına `http://127.0.0.1:8000/api/account/register/` yazıyoruz.
+3. **Body → raw → JSON** seçeneğini işaretliyoruz.
+4. Yeni kullanıcı bilgilerimizi JSON formatında yazıyoruz.
+5. **Send butonuna** tıklıyoruz.
+6. Başarılı olduğunda `201 Created` durum kodunu görmemiz gerekiyor (bu, yeni kayıt oluşturuldu demektir ✅).
+7. `views` kısmında biz başarı mesajı olarak ayarladığımız için bize "Your account resgistered successfully!" döndürmesi gerek.
+---
 
 
 
