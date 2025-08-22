@@ -713,7 +713,8 @@ Mailtrap, geliştirme aşamasında gerçek maillere gitmeden test etmemizi sağl
 Mailtrap’ten aldığımız bilgileri `settings.py` dosyamıza ekliyoruz:
 
 ```python
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_HOST_USER = 'host_user'       # Mailtrap'in verdiği kullanıcı adı
 EMAIL_HOST_PASSWORD = 'host_password'  # Mailtrap'in verdiği şifre
@@ -725,7 +726,7 @@ EMAIL_USE_SSL = False
 ```
 
 ⚠️ **Dikkat:**
-
+* Biz yukarıda `smtp` olarak ayarı yorum satırı olarak yaptık ve `console` olanı kullandık çünkü biz gerçekten mail göndermek istemiyoruz, konsol alanında görmek istiyoruz. Fakat maili gerçekten göndermek istersek yukarıdaki satırı kullanmamız gerek.
 * Geliştirme ortamında TLS/SSL kapalı tutuyoruz.
 * **Gerçek sunucuda (production)** çalıştırırken:
 
@@ -845,10 +846,50 @@ python manage.py migrate
 ```
 
 ### Adım 5: Postman ile test
-1. Önce sunucuyu çalıştır:
+
+Önce sunucuyu çalıştır:
 
 ```bash
 python manage.py runserver
 ```
 
-2. Postman’da `POST` metodu ile `http://127.0.0.1:8000/api/account/forget_password/` adresine kullanıcı mailini JSON olarak gönder.
+Önce yeni bir hesap oluşturalım. Çünkü biraz önce `receiver` ile eklediğimiz özellik sayesinde, her kullanıcı için otomatik olarak bir profil oluşturuluyor. Bu yüzden açacağımız bu yeni hesabı kullanarak mail testimizi gerçekleştireceğiz.
+
+Yeni hesap ekleme işlemini daha önce anlatmıştık; yine de aşağıdaki görseli bırakıyorum:
+
+<img width="1144" height="775" alt="Yeni hesap açmak" src="https://github.com/user-attachments/assets/159161c4-27bc-4bb1-a13a-9c7a91773d00" />
+
+Yeni hesap açtıktan sonra, bilgilerini kullanarak mail gönderme işlemini test edelim:
+
+<img width="1144" height="775" alt="Şifre Sıfırlama İşlemi" src="https://github.com/user-attachments/assets/85e15d87-40f0-4e62-95d7-931d0b85c902" />
+
+1. Method olarak `POST` seçeceğiz.
+2. URL alanına belirlediğimiz gibi `forget_password` olacak bu yüzden URL olarak `http://127.0.0.1:8000/api/account/forget_password/` yazacağız.
+3. body alanına ise sadece `email` göndereceğiz.
+4. Göndermek için `Send` butonuna tıklayacağız.
+5. Başarılı ise `200 OK` durumu dönecek.
+6. Başarılı olursa belirlediğimiz gibi `A password reset link has been sent to murat@example.com.` mesajını göreceğiz.
+
+Mailin kullanıcıya nasıl gittiğini görmek için, biz maili console’a yazdırdık. Bu yüzden console’a baktığımızda oluşturulan linki ve onun için üretilen token’i görebileceğiz:
+
+<img width="1115" height="628" alt="Gönderilen mail" src="https://github.com/user-attachments/assets/608d34ac-6c86-4a1c-991a-326186d1d42a" />
+
+Console’da mailin yapısını görebiliriz: gönderen mail adresi, alıcı mail adresi, yazdığımız body ve body’deki şifre sıfırlama linki ile token’i.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
