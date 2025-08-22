@@ -690,12 +690,165 @@ Güncelleme işlemi deneyelim:
 7.  Başarılı olursa güncellenmiş kullanıcı verilerini JSON olarak alırsın.
 
 
+---
+## 1️⃣4️⃣ Mailtrap ile E-Posta Gönderme Ayarları
+
+Kullanıcı kayıt olurken veya şifresini unuttuğunda **e-posta göndermek** için Mailtrap kullanacağız.
+Mailtrap, geliştirme aşamasında gerçek maillere gitmeden test etmemizi sağlayan güvenli bir SMTP servisidir.
+
+### Adım 1: Mailtrap Hesabı Açma
+
+👉 Önce [Mailtrap](https://mailtrap.io/register/signup?ref=header) adresine girip ücretsiz bir hesap oluşturuyoruz.
+👉 Daha sonra **Inbox** oluşturarak SMTP ayarlarını kopyalıyoruz.
+
+<img width="1919" height="912" alt="Mailtrap" src="https://github.com/user-attachments/assets/a3f24592-bca6-4bf2-b198-4f6c414a0259" />
+
+1. Sandboxes'a tıklayacaksın.
+2. Seçeneklerden `Django` seçeceksin.
+3. Settings.py dosyasına eklenmesi gereken SMTP bilgileri göreceksin.
+4. Copy butonuna tıklayarak kopyalayacaksın.
+
+### Adım 2: settings.py Dosyasına SMTP Bilgilerini Ekleme
+
+Mailtrap’ten aldığımız bilgileri `settings.py` dosyamıza ekliyoruz:
+
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'host_user'       # Mailtrap'in verdiği kullanıcı adı
+EMAIL_HOST_PASSWORD = 'host_password'  # Mailtrap'in verdiği şifre
+EMAIL_PORT = 2525
+
+# Geliştirme ortamı için:
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+```
+
+⚠️ **Dikkat:**
+
+* Geliştirme ortamında TLS/SSL kapalı tutuyoruz.
+* **Gerçek sunucuda (production)** çalıştırırken:
+
+  ```python
+  EMAIL_USE_TLS = True
+  EMAIL_USE_SSL = True
+  ```
 
 
+## 1️⃣5️⃣ Kullanıcı Şifre Sıfırlama Modeli ve Fonksiyonları
+Şimdi kullanıcıların şifresini sıfırlayabilmesi için **Profile modeli** oluşturacağız. Bu model, kullanıcıya ait ekstra bilgileri tutacak (ör. reset token ve süresi).
 
 
+### Adım 1: Gerekli kütüphaneleri ve modelleri tanımlamak
+Profile modeli oluşturmak için bu kütüphaneleri kullanmaya ihtiyacımız olacaktır, bu yüzden `models.py` içine şunları ekliyoruz:
 
+```python
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+```
 
+Ondan sonra `Profile` modeli oluşturalım:
+```python
+class Profile(models.Model):
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
+    reset_password_token = models.CharField(max_length=50, default="", blank=True)
+    reset_password_expire = models.DateTimeField(null=True, blank=True)
+```
 
+Bir kullanıcı (User) oluşturulduğunda otomatik olarak Profile da oluşturulsun istiyoruz bu yüzden Tam Profile modelin altında `receiver` tanımlayacağız:
 
+```python
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, created, **kwargs):
+    if created:
+        profile = Profile(user=instance)
+        profile.save()
+```
 
+### Adım 2: Host bilgisini almak
+
+Şimdi `views.py` dosyasına geçiyoruz. Önce gerekli yeni kütphaneleri dahil edeceğiz:
+
+```python
+from datetime import datetime, timedelta
+from django.shortcuts import get_object_or_404, render
+from django.utils.crypto import get_random_string
+from django.core.mail import send_mail
+```
+
+Kullanıcıya şifre sıfırlama linki göndereceğimiz için host adresini dinamik almak gerekiyor. Bu fonksiyonu biraz sonra tanımlayacağımız linki gönderen fonksiyonun içinde kullanacağız:
+
+```python
+def get_current_host(request):
+    protocol = 'https' if request.is_secure() else 'http'
+    host = request.get_host()
+    return f"{protocol}://{host}/"
+```
+
+Artık şifre sıfırlama fonksiyonumuzu yazmaya başlayabiliriz:
+```python
+@api_view(["POST"])
+def forget_password(request):
+    data = request.data
+    user = get_object_or_404(User, email=data['email'])
+
+    token = get_random_string(40)
+    expire_date = datetime.now() + timedelta(minutes=20)
+
+    user.profile.reset_password_token = token
+    user.profile.reset_password_expire = expire_date
+    user.profile.save()
+
+    host = get_current_host(request)
+    link = f"{host}api/reset_password/{token}"
+
+    body = (
+        f"Hello {user.first_name},\n\nWe received a request to reset your password."
+        f" Please use the link below to set a new password. This link will expire in 20 minutes.\n\n"
+        f"Reset Password Link: {link}\n\n"
+        "If you did not request a password reset, please ignore this email."
+    )
+
+    send_mail(
+        "Password Reset Request for Your Account",
+        body,
+        "no-reply@example.com",
+        [user.email],
+        fail_silently=False,
+    )
+
+    return Response({'details': f'A password reset link has been sent to {user.email}.'})
+```
+
+### Adım 3: URL tanımlamaları
+`account/urls.py` içinde yeni endpointimizi ekliyoruz:
+
+```python
+urlpatterns = [
+    path('register/', views.register, name='register'),
+    path('userinfo/', views.current_user, name='user_info'),
+    path('update/', views.update_user, name='update_user'),
+    path('forget_password/', views.forget_password, name='forget_password'),  # 👈 yeni endpoint
+]
+```
+
+### Adım 4: Migration Oluşturma
+Yeni model eklediğimiz için yeni bir migration oluşturup veri tabana uygulamamız gerekiyor bu yüzden terminalde bu komutları kullanacğaız:
+
+Migrations oluşturmak için:
+```bash
+python manage.py makemigrations
+```
+Veri tabana uygulamak için:
+```bash
+python manage.py migrate
+```
+
+### Adım 5: Postman ile test
+1. Önce sunucuyu çalıştır:
+
+```bash
+python manage.py runserver
+```
+
+2. Postman’da `POST` metodu ile `http://127.0.0.1:8000/api/account/forget_password/` adresine kullanıcı mailini JSON olarak gönder.
