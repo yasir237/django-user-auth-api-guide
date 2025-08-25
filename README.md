@@ -812,7 +812,7 @@ def forget_password(request):
 
     user.profile.save()
     
-    host = get_current_hsot(request)
+    host = get_current_host(request)
     link = "{host}api/account/reset_password/{token}".format(host=host, token=token)
 
     body = (
