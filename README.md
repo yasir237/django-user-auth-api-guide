@@ -555,6 +555,16 @@ def current_user(request):
     return Response(user.data)
 ```
 
+Tabi UserSerializer tanımlı olmadığı için hata verecektir. Biz daha önce aslında `.serializers.py` dosyasından SignUpSerializer dahil ettik şimdi virgül ile ayırarak UserSerializer da dahil edelim. Yani bu satırı:
+```python
+from .serializers import SignUpSerializer
+```
+Bu satırla değiştireceğiz:
+```pyhon
+from .serializers import SignUpSerializer, UserSerializer
+```
+
+
 * `@permission_classes([IsAuthenticated])` → Bu endpoint’e **sadece giriş yapmış kullanıcılar** erişebilir.
 * `request.user` → Giriş yapan kullanıcıyı temsil eder.
 * `UserSerializer` → Daha önce serialiser dosyasına yazdığımız sınıf, kullanıcı verilerini JSON formatına çevirir.
