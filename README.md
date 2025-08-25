@@ -180,7 +180,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-👉 Token sürelerini ayarlamak için en üstte `timedelta` import ediyoruz:
+👉 Token sürelerini ayarlamak için `settings.py` dosyasının en üstte `timedelta` import ediyoruz:
 ```python
 from datetime import timedelta
 ```
@@ -234,7 +234,7 @@ New-Item -Path "account\serializers.py" -ItemType "File"
 touch account/serializers.py
 ```
 
-İlk olarak kullanacağımız kütüphaneleri tanımlıyoruz:
+İlk olarak kullanacağımız kütüphaneleri yeni oluşturduğumuz `serializers.py` dosyasında tanımlıyoruz:
 ```bash
 from rest_framework import serializers
 from django.contrib.auth.models import User
