@@ -235,7 +235,7 @@ touch account/serializers.py
 ```
 
 İlk olarak kullanacağımız kütüphaneleri yeni oluşturduğumuz `serializers.py` dosyasında tanımlıyoruz:
-```bash
+```python
 from rest_framework import serializers
 from django.contrib.auth.models import User
 ```
