@@ -877,11 +877,18 @@ Mailin kullanıcıya nasıl gittiğini görmek için, biz maili console’a yazd
 Console’da mailin yapısını görebiliriz: gönderen mail adresi, alıcı mail adresi, yazdığımız body ve body’deki şifre sıfırlama linki ile token’i.
 
 
+Hatta dilerseniz, `settings.py` dosyasına gidip aşağıdaki satırı **yorum satırına** alabilirsiniz:
 
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+```
 
+Bunu yaptıktan sonra tekrar Postman üzerinden yeni bir istek gönderelim.
+Artık mail, console’a düşmeyecek; bunun yerine [Mailtrap](https://mailtrap.io/inboxes) hesabınıza gönderilecektir.
 
+`My Sandbox` alanına girdiğinizde aşağıdaki gibi test mailini görebilirsiniz:
 
-
+<img width="1919" height="906" alt="2" src="https://github.com/user-attachments/assets/6c983fd1-ef86-42f8-8d04-99f0542fbf12" />
 
 
 
