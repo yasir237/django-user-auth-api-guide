@@ -649,6 +649,7 @@ def update_user(request):
     return Response(serializer.data)
 ```
 
+* Eğer `Postman`'da yeni sekme açtıysanız `Authorization` kısmında `Bearer Token` alanında `access token`'in eklendiğinden emin olun.
 * `@permission_classes([IsAuthenticated])` → Bu endpoint’e sadece giriş yapmış kullanıcılar erişebilir.
 * `request.user` → Güncellenmek istenen kullanıcıyı temsil eder.
 * `user.save()` → Değişiklikleri veritabanına kaydeder.
