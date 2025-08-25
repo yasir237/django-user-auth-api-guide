@@ -881,7 +881,7 @@ http://127.0.0.1:8000/api/account/register/
 
 2. JSON:
 
-```
+```json
 {
     "email": "murat@example.com",
     "first_name": "Murat",
