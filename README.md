@@ -560,7 +560,7 @@ Tabi UserSerializer tanımlı olmadığı için hata verecektir. Biz daha önce 
 from .serializers import SignUpSerializer
 ```
 Bu satırla değiştireceğiz:
-```pyhon
+```python
 from .serializers import SignUpSerializer, UserSerializer
 ```
 
