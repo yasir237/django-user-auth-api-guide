@@ -1099,9 +1099,9 @@ Gelen access token’i Postman’de `Authorization → Bearer` Token kısmına y
 
 Yukarıdaki görselde, admin yetkisi olan kullanıcıların yanında ✅ işareti görünüyor.
 
-Biraz önceki admin olarak eklediğimiz `mehmet` hesap bilgilerini kullanarak `id=1` olan kullanıcıyı silelim:
+Biraz önceki admin olarak eklediğimiz `mehmet` hesap bilgilerini kullanarak `http://127.0.0.1:8000/api/account/delete_user/1/` endpoint'e istek göndererek `id=1` olan kullanıcıyı silelim:
 
-<img width="1144" height="775" alt="User Delete" src="https://github.com/user-attachments/assets/1ff6864e-0a67-422d-a963-9ab03d3d11dc" />
+<img width="1144" height="775" alt="Silme İslemi" src="https://github.com/user-attachments/assets/90b6bb87-cec9-4d8e-bee8-02d046c4ebd1" />
 
 Silme işlemi başarılı mesajı verdi 
 
