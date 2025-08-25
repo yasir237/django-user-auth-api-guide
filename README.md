@@ -938,14 +938,46 @@ urlpatterns = [
 
 Artık kullanıcı, kendisine gönderilen token ile şifresini şekilde sıfırlayabilir.
 
-### Adım 7: Postman ile Dene
+### Adım 7: Postman ile Test Etme
 
-Şimdi şifre sııfrlama işlemini tamamen bitirelim. Önce forget_password fonksiyonunu kullanarak yeni bir token gönderelim:
+Şimdi şifre sıfırlama sürecini tamamen test edelim.
 
+Öncelikle `forget_password` fonksiyonunu kullanarak kullanıcıya yeni bir token gönderelim:
 
+<img width="1144" height="775" alt="image" src="https://github.com/user-attachments/assets/89a704ba-4b75-49a3-93e9-18bbc5fcdbb6" />
 
+Gönderilen maili **Mailtrap** üzerinden kontrol edelim ve token içeren linki alalım:
 
+<img width="958" height="609" alt="image" src="https://github.com/user-attachments/assets/3910d75a-4c0f-4b25-91ef-d76e3ac120a3" />
 
+Şimdi Postman içinde yeni bir istek oluşturuyoruz:
 
+<img width="1144" height="775" alt="image" src="https://github.com/user-attachments/assets/a54487bf-9743-4997-8c41-acd71cf257fa" />
 
+* **Method:** POST
+* **Body:** `password` ve `confirm_password` alanlarını doldur
+* **Send** butonuna bas
 
+Başarılı olduğunda şu mesajı görmeliyiz:
+
+```
+Your password has been reset successfully.
+```
+
+Bu, kullanıcının şifresinin başarıyla sıfırlandığı ve yeni belirlenen şifre ile değiştirildiği anlamına gelir.
+
+Artık yeni şifreyi test edebiliriz:
+
+**Eski şifreyi denemek:**
+
+<img width="1144" height="775" alt="Eski sifre denemek" src="https://github.com/user-attachments/assets/d591680f-20e1-4301-bff0-c2eae9a87740" />
+
+Gördüğümüz gibi eski şifre ile giriş denemesi başarısız oldu.
+
+**Yeni şifreyi denemek:**
+
+<img width="1144" height="775" alt="Yeni sifre basarili olmus" src="https://github.com/user-attachments/assets/8b794b77-dd80-4d37-b7d4-9a703728c1a8" />
+
+Yeni şifre ile giriş yaptığımızda kullanıcıya ait **refresh** ve **access tokenleri** verildi.
+
+Bu da demek oluyor ki şifre sıfırlama işlemi doğru şekilde çalışıyor. (:
