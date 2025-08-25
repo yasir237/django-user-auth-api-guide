@@ -77,7 +77,7 @@ Sondaki `.` ise projenin direkt olarak bulunduğumuz klasöre kurulmasını sağ
 
 Artık REST API geliştireceğimiz için projeye **Django REST Framework**’ü tanıtmamız gerekiyor. Bunun için `settings.py` dosyasını açıp `INSTALLED_APPS` listesine `rest_framework` ekliyoruz:
 
-```
+```python
 INSTALLED_APPS = [
     ...
     'rest_framework',
