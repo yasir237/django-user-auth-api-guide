@@ -786,7 +786,7 @@ def get_current_host(request):
     return f"{protocol}://{host}/"
 ```
 
-Artık şifre sıfırlama fonksiyonumuzu yazmaya başlayabiliriz:
+Artık şifreyi unuttum fonksiyonumuzu yazmaya başlayabiliriz:
 ```python
 @api_view(["POST"])
 def forget_password(request):
@@ -891,7 +891,57 @@ Artık mail, console’a düşmeyecek; bunun yerine [Mailtrap](https://mailtrap.
 <img width="1919" height="906" alt="2" src="https://github.com/user-attachments/assets/6c983fd1-ef86-42f8-8d04-99f0542fbf12" />
 
 
+### Adım 6: Şifre Sıfırlama Fonksiyonunu Yazmak
 
+Kullanıcı kendisine gönderilen özel token içeren linke tıkladığında, tokeni doğrulayıp şifresini sıfırlayacak bir fonksiyon yazmamız gerekiyor.
+
+Bunu yapmak için `views.py` dosyasında `forget_password` fonksiyonunun altına aşağıdaki fonksiyonu ekleyelim:
+
+```python
+@api_view(["POST"])
+def reset_password(request, token):
+    data = request.data
+    user = get_object_or_404(User, profile__reset_password_token=token)
+
+    if user.profile.reset_password_expire.replace(tzinfo=None) < datetime.now():
+        return Response({'error': 'The reset link has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if data['password'] != data['confirm_password']:
+        return Response({'error': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user.set_password(data['password'])
+    user.profile.reset_password_token = ''
+    user.profile.reset_password_expire = None
+    user.profile.save()
+    user.save()
+
+    return Response({'details': 'Your password has been reset successfully.'})
+```
+
+Burada şunlar oluyor:
+
+1. Önce tokeni alıp ilgili kullanıcıyı buluyoruz.
+2. Tokenin süresi geçmişse kullanıcıya hata mesajı dönüyoruz.
+3. Şifre ve onay şifresi uyuşmuyorsa hata mesajı veriyoruz.
+4. Tüm kontroller geçerse şifreyi güncelliyor, token ve süresini temizliyoruz.
+
+Ardından `urls.py` dosyasında yeni bir endpoint tanımlayalım:
+
+```python
+urlpatterns = [
+    path('register/', views.register, name='register'),
+    path('userinfo/', views.current_user, name='user_info'),
+    path('update/', views.update_user, name='update_user'),  
+    path('forget_password/', views.forget_password, name='forget_password'), 
+    path('reset_password/<str:token>', views.reset_password, name='reset_password'),  # 👈 yeni endpoint
+]
+```
+
+Artık kullanıcı, kendisine gönderilen token ile şifresini şekilde sıfırlayabilir.
+
+### Adım 7: Postman ile Dene
+
+Şimdi şifre sııfrlama işlemini tamamen bitirelim. Önce forget_password fonksiyonunu kullanarak yeni bir token gönderelim:
 
 
 
