@@ -756,6 +756,7 @@ EMAIL_USE_SSL = False
 Profile modeli oluşturmak için bu kütüphaneleri kullanmaya ihtiyacımız olacaktır, bu yüzden `models.py` içine şunları ekliyoruz:
 
 ```python
+from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 ```
