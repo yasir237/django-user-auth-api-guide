@@ -162,7 +162,7 @@ pip install djangorestframework-simplejwt
 ### Ayarlar
 Kurulumdan sonra `settings.py` dosyamızda birkaç ayar yapmamız gerekiyor.
 
-👉 Önce `REST_FRAMEWORK` kısmına JWT’yi ekliyoruz:
+👉 Önce `REST_FRAMEWORK` kısmına JWT’yi ekliyoruz, `settings.py` büyük ihtimal `REST_FRAMEWORK` kısmını bulmayacaksın bu yüzden aşağıdaki kodu aynen dosyanın istediğin herhangi bir yerine yazabilirsin:
 ```python
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
