@@ -90,7 +90,9 @@ Projemizi test etmek için şu komutla çalıştırabilirsiniz:
 ```
 python manage.py runserver
 ```
-Eğer tarayıcıda `http://127.0.0.1:8000/` adresine gidince Django’nun hoş geldiniz ekranını görüyorsanız her şey yolunda demektir 🚀
+Eğer tarayıcıda `http://127.0.0.1:8000/` adresine gidince aşağıdaki Django’nun hoş geldiniz ekranını görüyorsanız her şey yolunda demektir 🚀
+
+<img width="1432" height="906" alt="The install worked successfully! Congratulations!" src="https://github.com/user-attachments/assets/eb174d5b-b9df-4d2b-8523-bc93ec587838" />
 
 Projeyi test ettikten sonra `Ctrl + C` tuşlarına basarak sunucuyu durdurabilirsiniz.  
 
