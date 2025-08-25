@@ -792,22 +792,20 @@ Artık şifreyi unuttum fonksiyonumuzu yazmaya başlayabiliriz:
 def forget_password(request):
     data = request.data
     user = get_object_or_404(User, email=data['email'])
-
     token = get_random_string(40)
     expire_date = datetime.now() + timedelta(minutes=20)
-
     user.profile.reset_password_token = token
     user.profile.reset_password_expire = expire_date
-    user.profile.save()
 
-    host = get_current_host(request)
-    link = f"{host}api/reset_password/{token}"
+    user.profile.save()
+    
+    host = get_current_hsot(request)
+    link = "{host}api/account/reset_password/{token}".format(host=host, token=token)
 
     body = (
         f"Hello {user.first_name},\n\nWe received a request to reset your password."
-        f" Please use the link below to set a new password. This link will expire in 20 minutes.\n\n"
-        f"Reset Password Link: {link}\n\n"
-        "If you did not request a password reset, please ignore this email."
+        f" Please use the link below to set a new password. This link will expire in 20 minutes.\n\nReset Password Link: {link}"
+        "\n\nIf you did not request a password reset, please ignore this email."
     )
 
     send_mail(
@@ -817,6 +815,7 @@ def forget_password(request):
         [user.email],
         fail_silently=False,
     )
+
 
     return Response({'details': f'A password reset link has been sent to {user.email}.'})
 ```
@@ -872,7 +871,8 @@ Yeni hesap açtıktan sonra, bilgilerini kullanarak mail gönderme işlemini tes
 
 Mailin kullanıcıya nasıl gittiğini görmek için, biz maili console’a yazdırdık. Bu yüzden console’a baktığımızda oluşturulan linki ve onun için üretilen token’i görebileceğiz:
 
-<img width="1115" height="628" alt="Gönderilen mail" src="https://github.com/user-attachments/assets/608d34ac-6c86-4a1c-991a-326186d1d42a" />
+<img width="1115" height="628" alt="Console içinde link" src="https://github.com/user-attachments/assets/7e866f21-6dad-4111-9ada-7e7e1c864681" />
+
 
 Console’da mailin yapısını görebiliriz: gönderen mail adresi, alıcı mail adresi, yazdığımız body ve body’deki şifre sıfırlama linki ile token’i.
 
@@ -888,8 +888,7 @@ Artık mail, console’a düşmeyecek; bunun yerine [Mailtrap](https://mailtrap.
 
 `My Sandbox` alanına girdiğinizde aşağıdaki gibi test mailini görebilirsiniz:
 
-<img width="1919" height="906" alt="2" src="https://github.com/user-attachments/assets/6c983fd1-ef86-42f8-8d04-99f0542fbf12" />
-
+<img width="1919" height="906" alt="Mailtrap içinde link" src="https://github.com/user-attachments/assets/0dc96f0c-291d-4dd9-980f-4b830118ec8b" />
 
 ### Adım 6: Şifre Sıfırlama Fonksiyonunu Yazmak
 
