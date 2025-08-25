@@ -251,7 +251,7 @@ Yeni kayıt olmak için gerekli bilgileri belirten bir sınıf oluşturuyoruz:
 
 ```python
 class SignUpSerializer(serializers.ModelSerializer):
-    class meta:
+    class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "password")
 
