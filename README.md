@@ -981,3 +981,110 @@ Gördüğümüz gibi eski şifre ile giriş denemesi başarısız oldu.
 Yeni şifre ile giriş yaptığımızda kullanıcıya ait **refresh** ve **access tokenleri** verildi.
 
 Bu da demek oluyor ki şifre sıfırlama işlemi doğru şekilde çalışıyor. (:
+
+---
+
+## 1️⃣6️⃣ Admin Yetkisi Kullanımı
+
+Aslında bu uygulama admin yetkisi uygulanacak bir işlem olmazsa da örnek yapmak adına hesap silme işlemi sadece admin yetkisine sahip olanlara sunabiliriz:
+
+### Adım 1: Fonksiyonu Yazmak ve Endpoint'i Eklemek
+
+Artık biliyoruz önce `views.py` dosyasında bizim kullanıcı silme fonskiyonumuzu yazacağız. Ancak buarada sadece admin yetkisi olan biri erişmesini istediğimiz için IsAuthenticated olmakla birlikte IsAdminUser eklememiz gerek. tabi önce dahil edelim sonra kullanalım:
+
+Dahil etme:
+```python
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+```
+
+Silme Fonksiyonumuzu yazalım:
+```python
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def delete_user(request, id):
+    if request.user.id == id:
+        return Response({'error': 'You cannot delete your own account.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = get_object_or_404(User, id=id)
+    user.delete()
+    return Response({'details': 'Your account has been deleted.'})
+```
+
+Sonrasında `urls.py` dosyasına yeni endpoint’i ekleyelim:
+```python
+urlpatterns = [
+    path("register/", views.register, name="register"),
+    path("userinfo/", views.current_user, name="user_info"),
+    path("update/", views.update_user, name="update_user"),
+    path("forget_password/", views.forget_password, name="forget_password"),
+    path("reset_password/<str:token>", views.reset_password, name="reset_password"),
+    path("delete_user/<int:id>/", views.delete_user, name="delete_user"),  # 👈 yeni endpoint
+]
+```
+
+### Adım 2: Postman ile Deneme
+Postman üzerinden admin olmayan bir hesapla `id=1` olan kullanıcıyı silmeyi deneyelim:
+
+<img width="1144" height="775" alt="image" src="https://github.com/user-attachments/assets/97013e4f-9e0f-4442-9f00-c4135d39dfaf" />
+
+
+Gördüğümüz gibi "You do not have permission to perform this action." mesajında "Bu eylemi gerçekleştirme yetkiniz yok.
+" olduğunu söylüyor.
+
+Şimdi yeni bir admin hesabı oluşturalım. Bunun en kolay yolu terminalden şu komutu çalıştırmaktır:
+
+```bash
+python manage.py createsuperuser
+```
+
+Ardından kullanıcı adı, e-posta ve şifre bilgilerini giriyoruz. Ben örnek olarak şu bilgileri kullandım:
+
+```bash
+Username: mehmet
+Email address: mehmet@example.com
+Password: Django123
+Password (again): Django123
+instance mehmet
+Superuser created successfully.
+```
+
+Sonrasında onun tokeni alalım, ama postman'dan tekrar istek göndermeden önce sunucuyu çalıştırmayı unutmayın. Unuttuysanız aşağıdaki komutu kullanarak çalıştırabilirsiniz (:
+```bash
+python manage.py runserver
+```
+
+şimdi `POST` olarak `http://127.0.0.1:8000/api/token/` adresine `username` ve `password` bilgilerini göndererek access token alalım:
+
+<img width="1144" height="775" alt="image" src="https://github.com/user-attachments/assets/db53cc24-e846-48c8-a9e7-920bddeba2bd" />
+
+Gelen access token’i Postman’de `Authorization → Bearer` Token kısmına yazıyoruz:
+
+<img width="1144" height="775" alt="Authorization icinde token yazmak" src="https://github.com/user-attachments/assets/c7cf1d06-6ab7-43ed-9f60-876b742cb683" />
+
+Şimdi admin panelini açıp mevcut hesaplara göz atalım, admin panelini açmak için bu linki kullanabiliriz `http://127.0.0.1:8000/admin/auth/user/`.
+
+<img width="1202" height="601" alt="image" src="https://github.com/user-attachments/assets/ede4bc4e-df30-41ad-8149-7ff8c53e60d0" />
+
+Yukarıdaki görselde, admin yetkisi olan kullanıcıların yanında ✅ işareti görünüyor.
+
+Biraz önceki admin olarak eklediğimiz `mehmet` hesap bilgilerini kullanarak `id=1` olan kullanıcıyı silelim:
+
+<img width="1144" height="775" alt="User Delete" src="https://github.com/user-attachments/assets/1ff6864e-0a67-422d-a963-9ab03d3d11dc" />
+
+Silme işlemi başarılı mesajı verdi 
+
+Admin paneline tekrar baktığımızda, yasir adlı kullanıcının listeden silindiğini görüyoruz:
+
+<img width="1192" height="559" alt="image" src="https://github.com/user-attachments/assets/e6c9b04a-aca1-4933-af6d-4f0b741d890d" />
+
+
+Böylece admin yetkisi olmayan kullanıcılar admin yetkisini gerektiren işlemlerini yapmalarını nasıl engellemesini öğrendik.
+
+---
+
+
+Dokümantasyon burada son bulmaktadır. Umarım bu çalışma, projeyi geliştiren herkese yol gösterici olur. Eğer herhangi bir hata veya eksiklik fark ederseniz, lütfen benimle iletişime geçmekten çekinmeyin.
+
+
+
+
