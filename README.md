@@ -872,12 +872,13 @@ Yeni hesap ekleme işlemini daha önce anlatmıştık; yine de aşağıdaki gör
 <img width="1144" height="775" alt="Yeni hesap açmak" src="https://github.com/user-attachments/assets/159161c4-27bc-4bb1-a13a-9c7a91773d00" />
 
 Kullandığım bilgiller:
-link
+
+1. link
 ```
 http://127.0.0.1:8000/api/account/register/
 ```
 
-JSON:
+2. JSON:
 
 ```
 {
